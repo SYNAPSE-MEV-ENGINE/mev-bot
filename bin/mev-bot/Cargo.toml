@@ -1,0 +1,13 @@
+[package]
+name = "mev-bot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mev-core = { path = "../../core" }
+mev-math = { path = "../../math" }
+mev-risk = { path = "../../mev-risk" }
+
+[[bin]]
+name = "mev-bot"
+path = "src/main.rs"

@@ -13,3 +13,6 @@ revm = "3.3"  # Use an older version to avoid c-kzg conflict
 secstr = "0.5"
 tokio = { version = "1.0", features = ["full"] }
 thiserror = "1.0"
+log = "0.4"
+mev-risk = { path = "../mev-risk" }
+chrono = "0.4"

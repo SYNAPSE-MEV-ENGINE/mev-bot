@@ -58,4 +58,14 @@ impl RiskEngine {
             Ok(input_amount)
         }
     }
+
+    pub fn validate_risk(&self, potential_loss: U256) -> Result<(), RiskError> {
+        if potential_loss > self.parameters.max_position_size {
+            return Err(RiskError::PositionSizeExceeded);
+        }
+        if potential_loss > U256::from(self.parameters.max_loss_percent) {
+            return Err(RiskError::DailyLossLimitExceeded);
+        }
+        Ok(())
+    }
 }

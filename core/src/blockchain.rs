@@ -1,53 +1,96 @@
 use ethers::{
-    providers::{Http, Provider, Middleware}, 
-    types::{Chain, U256},
+    providers::{Http, Provider, Middleware},
+    types::Chain,
 };
 use std::sync::Arc;
-use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum BlockchainError {
-    #[error("Provider initialization failed: {0}")]
-    ProviderInitialization(String),
-    #[error("Network mismatch: expected {expected:?}, got {actual:?}")]
-    NetworkMismatch { expected: Chain, actual: Chain },
+    #[error("Provider error: {0}")]
+    ProviderError(#[from] ethers::providers::ProviderError),
+    #[error("Invalid chain ID: {0}")]
+    InvalidChainId(u64),
+    #[error("Network error: {0}")]
+    NetworkError(String),
 }
 
-pub async fn init_blockchain(
-    rpc_url: Option<&str>,
-) -> Result<Arc<Provider<Http>>, BlockchainError> {
-    let url = rpc_url.unwrap_or("http://localhost:8545");
-    let provider = Provider::<Http>::try_from(url)
-        .map_err(|e| BlockchainError::ProviderInitialization(e.to_string()))?;
+pub struct BlockchainConnection {
+    provider: Arc<Provider<Http>>,
+    chain: Chain,
+}
 
-    let chain_id = provider.get_chainid().await.map_err(|e| {
-        BlockchainError::ProviderInitialization(format!("Chain ID check failed: {}", e))
-    })?;
+impl BlockchainConnection {
+    pub async fn new(rpc_url: &str, chain: Chain) -> Result<Self, BlockchainError> {
+        let provider = Provider::<Http>::try_from(rpc_url)
+            .map_err(|e| BlockchainError::NetworkError(e.to_string()))?;
+        
+        // Verify chain ID
+        let chain_id = provider.get_chainid().await?.as_u64();
+        match chain {
+            Chain::PolygonMumbai if chain_id == 80001 => (),
+            Chain::Polygon if chain_id == 137 => (),
+            _ => return Err(BlockchainError::InvalidChainId(chain_id)),
+        }
 
-    let expected = Chain::PolygonMumbai;
-    if chain_id != U256::from(expected as u64) { // Convert expected to U256 for comparison.
-
-        return Err(BlockchainError::NetworkMismatch {
-            expected,
-            actual: Chain::try_from(chain_id.as_u64()).unwrap_or(Chain::PolygonMumbai),
-        });
+        Ok(Self {
+            provider: Arc::new(provider),
+            chain,
+        })
     }
 
-    provider.get_block_number().await.map_err(|e| {
-        BlockchainError::ProviderInitialization(format!("Health check failed: {}", e))
-    })?;
+    pub fn provider(&self) -> Arc<Provider<Http>> {
+        self.provider.clone()
+    }
 
-    Ok(Arc::new(provider))
+    pub fn chain(&self) -> Chain {
+        self.chain
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tokio::test;
 
-    #[tokio::test]
+    #[test]
     async fn test_local_provider() {
-        let provider = init_blockchain(None).await.unwrap();
+        let connection = BlockchainConnection::new(
+            "http://localhost:8545",
+            Chain::PolygonMumbai
+        ).await.unwrap();
+        
+        let provider = connection.provider();
         let block = provider.get_block_number().await.unwrap();
-        assert!(block > 0, "Should connect to local testnet");
+        assert!(block.as_u64() > 0, "Should connect to local testnet");
+    }
+
+    #[test]
+    async fn test_invalid_chain_id() {
+        let result = BlockchainConnection::new(
+            "http://localhost:8545",
+            Chain::Mainnet // Wrong chain
+        ).await;
+        
+        assert!(matches!(result, Err(BlockchainError::InvalidChainId(_))));
+    }
+
+    #[test]
+    async fn test_invalid_url() {
+        let result = BlockchainConnection::new(
+            "http://invalid-url",
+            Chain::PolygonMumbai
+        ).await;
+        
+        assert!(matches!(result, Err(BlockchainError::NetworkError(_))));
+    }
+
+    #[test]
+    async fn test_chain_accessor() {
+        let connection = BlockchainConnection::new(
+            "http://localhost:8545",
+            Chain::PolygonMumbai
+        ).await.unwrap();
+        
+        assert_eq!(connection.chain(), Chain::PolygonMumbai);
     }
 }

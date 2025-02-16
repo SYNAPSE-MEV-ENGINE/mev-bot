@@ -1,0 +1,15 @@
+[package]
+name = "mev-core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+futures-util = "0.3"
+ethers = { version = "2.0", features = ["legacy", "rustls", "ws"] }
+revm = "3.3"  # Use an older version to avoid c-kzg conflict
+secstr = "0.5"
+tokio = { version = "1.0", features = ["full"] }
+thiserror = "1.0"

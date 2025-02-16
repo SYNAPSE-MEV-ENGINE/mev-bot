@@ -1,0 +1,91 @@
+# Workspace Global Rules for Advanced MEV Bot on Polygon
+
+These rules are designed to guide the development of an advanced MEV bot for the Polygon blockchain, focusing on performance, modularity, and adherence to best practices.
+
+1. **MEV Strategy Flow**:
+   - Implement a complete MEV strategy flow:
+     - **Mempool Monitoring**: Continuously monitor the mempool for potential MEV opportunities.
+     - **Opportunity Identification**: Identify profitable MEV opportunities based on predefined strategies and real-time data.
+     - **Transaction Simulation**: Simulate the MEV transaction on a forked Polygon node to ensure profitability and prevent losses.
+     - **Transaction Building**: Construct the MEV transaction, including necessary gas limits and fees.
+     - **Transaction Bundling**: Bundle the MEV transaction with other transactions (if necessary) to optimize gas usage and increase the likelihood of inclusion.
+     - **Transaction Submission**: Submit the bundled transaction to the Polygon network through a private relay or Polygon's version of Flashbots (if available).
+     - **Monitoring and Adjustment**: Monitor the status of the transaction and adjust parameters (e.g., gas price) as needed to ensure successful execution.
+
+2. **Transaction Bundling and Simulation**:
+   - Implement transaction bundling to optimize gas costs and increase the probability of transaction inclusion.
+   - Use a forked Polygon node for accurate transaction simulation before submission. This simulation should:
+     - Replicate the current state of the Polygon blockchain.
+     - Accurately estimate gas costs.
+     - Identify potential reverts or errors.
+     - Evaluate the profitability of the MEV opportunity.
+
+3. **Polygon's Flashbots (if available)**:
+   - Integrate with Polygon's version of Flashbots (or a similar private relay service) to minimize the risk of frontrunning and maximize the likelihood of transaction inclusion.
+   - If Flashbots is not available, explore alternative private transaction submission methods.
+
+4. **Architecture Based on Successful MEV Bots**:
+   - Structure the bot based on the architecture of currently successful MEV bots on Polygon. This typically includes the following modules:
+     - `core`: Handles blockchain interaction, mempool monitoring, transaction building, and communication with the forked node.
+     - `strategies`: Implements various MEV strategies (e.g., sandwich attacks, arbitrage, liquidations).
+     - `bundler`: Optimizes and bundles transactions for submission.
+     - `simulator`: Simulates transactions on a forked node.
+     - `relayer`: Handles transaction submission through private relays or Polygon's Flashbots.
+     - `config`: Manages the bot's configuration parameters.
+     - `utils`: Provides utility functions and data structures.
+
+5. **Enhancements to Existing Architectures**:
+   - Enhance the architecture of existing MEV bots by:
+     - Implementing more sophisticated risk management techniques.
+     - Incorporating advanced machine learning algorithms for opportunity identification and prediction.
+     - Optimizing gas usage through advanced techniques like calldata compression.
+     - Improving monitoring and alerting capabilities.
+     - Adding support for new MEV strategies.
+
+6. **Low Latency Design**:
+   - Prioritize ultra-low latency in all components, aiming for sub-nanosecond latency where possible.
+   - Use asynchronous programming (`async`/`await`) extensively to prevent blocking operations.
+   - Optimize data structures and algorithms for speed.
+   - Implement direct access to the mempool to minimize transaction discovery time.
+
+7. **Modular Architecture**:
+   - Adopt a modular design to facilitate maintainability, upgradability, and the addition of new strategies.
+   - Define clear interfaces between modules to allow for independent development and testing.
+
+8. **MEV Best Practices**:
+   - Implement robust error handling and fault tolerance to prevent losses due to unexpected events.
+   - Use secure coding practices to protect against exploits and vulnerabilities.
+   - Continuously monitor the bot's performance and adapt strategies to changing market conditions.
+   - Implement a risk management system to limit potential losses.
+   - Stay up-to-date with the latest MEV research and techniques.
+
+9. **Polygon Blockchain Specifics**:
+   - Optimize for Polygon's architecture, including its consensus mechanism and block times.
+   - Monitor gas prices and adjust transaction fees dynamically to maximize profitability.
+   - Handle potential chain re-orgs and other network anomalies gracefully.
+
+10. **Development Practices**:
+    - Write comprehensive unit and integration tests for all components.
+    - Use a code linter and formatter to maintain consistent code style.
+    - Document all code thoroughly.
+    - Use type hints extensively to improve code clarity and prevent errors.
+    - Implement continuous integration and continuous deployment (CI/CD) to automate testing and deployment.
+
+11. **Budget Considerations**:
+    - Given the $0 budget, prioritize open-source libraries and tools.
+    - Focus on optimizing existing code and algorithms rather than developing new ones from scratch.
+    - Leverage community resources and knowledge to overcome limitations.
+
+12. **Monitoring and Alerting**:
+    - Implement real-time monitoring of the bot's performance, profitability, and risk exposure.
+    - Set up alerts for critical events, such as errors, unexpected behavior, or significant losses.
+
+13. **Security**:
+    - Conduct regular security audits of the codebase.
+    - Implement robust access controls to prevent unauthorized access to the bot.
+    - Use hardware security modules (HSMs) or secure enclaves to protect private keys.
+
+14. **Continuous Improvement**:
+    - Continuously analyze the bot's performance and identify areas for improvement.
+    - Experiment with new strategies and techniques to stay ahead of the competition.
+    - Regularly update the codebase to incorporate the latest security patches and performance optimizations.

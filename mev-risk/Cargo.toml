@@ -1,0 +1,12 @@
+# mev-risk/Cargo.toml
+[package]
+name = "mev-risk"  # Must match exactly
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ethers = { version = "2.0", features = ["legacy"] }
+thiserror = "1.0"
+chrono = "0.4"
+log = "0.4"
+parking_lot = "0.12"

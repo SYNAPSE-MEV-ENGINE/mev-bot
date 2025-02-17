@@ -1,10 +1,32 @@
 {
     "cSpell.words": [
+        "aiohttp",
+        "asyncio",
         "backrun",
-        "frontrun",
-        "flashbots",
-        "revm",
+        "BAUBGK",
         "chainid",
-        "thiserror"
+        "Chainlink",
+        "CHAINLINK",
+        "chrono",
+        "codegen",
+        "collateralization",
+        "collateralized",
+        "CTZSV",
+        "ECEA",
+        "flashbots",
+        "Flashloan",
+        "frontrun",
+        "IERC",
+        "IFEJ",
+        "levelname",
+        "michaelpento",
+        "POLYGONSCAN",
+        "Reentrancy",
+        "revm",
+        "rustls",
+        "serde",
+        "supabase",
+        "thiserror",
+        "venv"
     ]
 }
